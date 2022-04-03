@@ -134,3 +134,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGOUT_REDIRECT_URL = "quotes:index"
 LOGIN_REDIRECT_URL = "quotes:index"
 LOGIN_URL = 'accounts:login'
+
+REST_FRAMEWORK = {
+    'DATETIME_FORMAT': '%d-%m-%Y %H:%M',
+}

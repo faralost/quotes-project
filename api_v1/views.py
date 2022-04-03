@@ -32,17 +32,12 @@ class QuoteViewSet(viewsets.ModelViewSet):
         return super(QuoteViewSet, self).get_serializer_class()
 
     @action(detail=True, methods=['patch'], url_path='rate-plus', permission_classes=[AllowAny])
-    def rate_plus(self, request, pk=None,):
+    def rate_plus(self, request, pk=None):
         quote = self.get_object()
-        serializer = QuoteUpdateRatingSerializer(data=request.data)
         rated = self.request.session.get('rated', False)
         if not rated:
-            if serializer.is_valid():
-                quote.rating += 1
-                quote.save()
-                self.request.session['rated'] = True
-                return Response(data={'rating': self.get_object().rating})
-            else:
-                return Response(serializer.errors,
-                                status=status.HTTP_400_BAD_REQUEST)
+            quote.rating += 1
+            quote.save()
+            self.request.session['rated'] = True
+            return Response(data={'rating': self.get_object().rating})
         return Response({'message': 'Already rated'})

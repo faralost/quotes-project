@@ -9,7 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
@@ -18,9 +17,9 @@
     <div class="container">
         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a class="nav-link px-2 text-white" href="{% url 'quotes:index' %}">Главная</a></li>
-                <li><a class="nav-link px-2 text-white" href="#">#</a></li>
-                <li><a class="nav-link px-2 text-white" href="#">#</a></li>
+                <li><a id="quotes" class="nav-link px-2 text-white"
+                       href="http://localhost:8000/api/v1/quotes/">Главная</a></li>
+                <li><a class="nav-link px-2 text-white" href="#">Добавить цитату</a></li>
                 {% block nav %}
                 {% endblock %}
             </ul>
@@ -45,9 +44,10 @@
     </div>
 </header>
 
-<div class="container">
-    {% block content %}{% endblock %}
-</div>
+{% block content %}
+    <div class="container main-container mt-3">
+    </div>
+{% endblock %}
 
 <script src="{% static 'js/main.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"

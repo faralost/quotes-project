@@ -16,10 +16,8 @@ class QuotePermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if view.action == 'retrieve':
             return True
-        elif view.action == 'update':
+        elif view.action in ['update', 'partial_update']:
             return request.user.is_staff
-        elif view.action == 'partial_update':
-            return True
         elif view.action == 'destroy':
             return request.user.is_staff
         else:
