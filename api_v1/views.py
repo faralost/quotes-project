@@ -1,0 +1,48 @@
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.response import Response
+
+from api_v1.permissions import QuotePermission
+from api_v1.serializers import QuoteSerializer, QuoteUpdateSerializer, QuoteUpdateRatingSerializer
+from quotes.models import Quote
+
+
+class QuoteViewSet(viewsets.ModelViewSet):
+    serializer_class = QuoteSerializer
+    queryset = Quote.objects.all()
+    permission_classes = (QuotePermission,)
+    action_serializers = {
+        'retrieve': QuoteSerializer,
+        'list': QuoteSerializer,
+        'create': QuoteSerializer,
+        'update': QuoteUpdateSerializer,
+        'partial_update': QuoteUpdateRatingSerializer
+    }
+
+    def get_queryset(self):
+        queryset = super(QuoteViewSet, self).get_queryset()
+        if not self.request.user.is_staff:
+            return queryset.filter(status='mod')
+        return queryset
+
+    def get_serializer_class(self):
+        if hasattr(self, 'action_serializers'):
+            return self.action_serializers.get(self.action, self.serializer_class)
+        return super(QuoteViewSet, self).get_serializer_class()
+
+    @action(detail=True, methods=['patch'], url_path='rate-plus', permission_classes=[AllowAny])
+    def rate_plus(self, request, pk=None,):
+        quote = self.get_object()
+        serializer = QuoteUpdateRatingSerializer(data=request.data)
+        rated = self.request.session.get('rated', False)
+        if not rated:
+            if serializer.is_valid():
+                quote.rating += 1
+                quote.save()
+                self.request.session['rated'] = True
+                return Response(data={'rating': self.get_object().rating})
+            else:
+                return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'Already rated'})

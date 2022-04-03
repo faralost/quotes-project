@@ -37,9 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 
     'quotes',
     'accounts',
+    'api_v1',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +131,6 @@ MEDIA_URL = '/uploads/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGOUT_REDIRECT_URL = "webapp:index"
-LOGIN_REDIRECT_URL = "webapp:index"
+LOGOUT_REDIRECT_URL = "quotes:index"
+LOGIN_REDIRECT_URL = "quotes:index"
 LOGIN_URL = 'accounts:login'
