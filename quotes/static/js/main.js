@@ -8,6 +8,8 @@ async function onClick(event) {
 
 function listQuotes(quotes) {
     const container = document.querySelector('.main-container');
+    const formContainer = document.querySelector('.form-container')
+    formContainer.style.display = 'none'
     const divs = document.querySelectorAll('.alert-dark');
     if (divs.length !== 0) {
         divs.forEach(function (div) {
@@ -69,6 +71,75 @@ function quoteDetail(quote) {
 function onLoad() {
     const linkQuotes = document.querySelector('#quotes');
     linkQuotes.addEventListener('click', onClick);
+    const linkCreateQuote = document.querySelector('#create-quote');
+    linkCreateQuote.addEventListener('click', onCreateClick);
+}
+
+async function onCreateClick(event) {
+    event.preventDefault();
+    const divs = document.querySelectorAll('.alert-dark');
+    divs.forEach(function (div) {
+        div.remove()
+    });
+    const formContainer = document.querySelector('.form-container');
+    if (document.querySelector('.alert-success')){
+        document.querySelector('.alert-success').remove()
+    }
+    formContainer.style.display = 'block'
+    let url = event.target.href
+    document.querySelector('form').onsubmit = async function (event) {
+        event.preventDefault()
+        const text = document.querySelector('#text').value;
+        const name = document.querySelector('#name').value;
+        const email = document.querySelector('#email').value;
+        const data = {
+            "text": text,
+            "name": name,
+            "email": email
+        }
+        const settings = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify(data)
+        }
+        const response = await fetch(url, settings);
+        if (response.status === 400) {
+            if (text === null || text === '') {
+                let textError = document.querySelector('#text');
+                textError.className = 'form-control is-invalid'
+            } else if (text) {
+                let textError = document.querySelector('#text');
+                textError.className = 'form-control is-valid'
+            }
+            if (name === null || name === '') {
+                let nameError = document.querySelector('#name');
+                nameError.className = 'form-control is-invalid'
+            } else if (name) {
+                let nameError = document.querySelector('#name');
+                nameError.className = 'form-control is-valid'
+            }
+            if (email === null || email === '') {
+                let emailError = document.querySelector('#email');
+                emailError.className = 'form-control is-invalid'
+            } else if (email) {
+                let emailError = document.querySelector('#email');
+                emailError.className = 'form-control is-valid'
+            }
+        } else if (response.status === 201) {
+            document.querySelector('#text').value = '';
+            document.querySelector('#name').value = '';
+            document.querySelector('#email').value = '';
+            formContainer.style.display = 'none'
+            const container = document.querySelector('.main-container');
+            let messageDiv = document.createElement('div');
+            messageDiv.className = 'alert alert-success'
+            messageDiv.innerText = 'Quote has been successfully added! You will be able' +
+                ' to see it in main page after Moderator checks it!'
+            container.append(messageDiv)
+        }
+    };
 }
 
 window.onload = onLoad;
