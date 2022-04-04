@@ -33,11 +33,19 @@ class QuoteViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['patch'], url_path='rate-plus', permission_classes=[AllowAny])
     def rate_plus(self, request, pk=None):
+        print(request.data['value'])
         quote = self.get_object()
-        rated = self.request.session.get('rated', False)
+        rated = self.request.session.get('rated', [])
         if not rated:
-            quote.rating += 1
-            quote.save()
-            self.request.session['rated'] = True
+            self.request.session['rated'] = []
+        if quote.pk not in rated:
+            if request.data['value'] == 'plus':
+                quote.rating += 1
+                quote.save()
+            else:
+                quote.rating -= 1
+                quote.save()
+            self.request.session['rated'].append(quote.pk)
+            self.request.session.modified = True
             return Response(data={'rating': self.get_object().rating})
         return Response({'message': 'Already rated'})
